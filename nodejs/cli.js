@@ -46,9 +46,7 @@ if(iFile){
 
 const document = DINKY.generate();
 DINKY.read(input, document.children);
-//console.log(JSON.stringify(document, null, 4))
+console.log(JSON.stringify(document, null, 4))
 
 
-
-const img = BITMAP.build(256, 256, 4);
-img.writePNG("XD.png");
+BITMAP.generate("XD.png", document);

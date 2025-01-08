@@ -94,18 +94,20 @@ const DINKY = {
         return -1;
     },        
     read: function(src, head){
-        const input = Tools.cleanSideBrackets(Tools.cleanNewLine(src));
+        const input = Tools.cleanNewLine(src);
 
         let str = "";
         let lastChar = "";
 
         const block = {
-            type: "TEXT",
+            type: "ANY",
             params: null,
             styling: {},
             str: "",
             children: []
         };
+
+        console.log(input)
 
         for(let i = 0; i < input.length; ++i){
             const c = input.charAt(i);
@@ -141,6 +143,10 @@ const DINKY = {
                 const substr = input.substring(i+1, closed);
                 DINKY.read(substr, block.children);
                 i = closed+1;
+                
+            }else
+            if(c == "]"){
+                continue;
             }else
             // Simple text
             if(c == " " && lastChar == " "){
@@ -151,8 +157,10 @@ const DINKY = {
             }
         }
         head.push(block);
-        console.log(str)
         block.str = Tools.cleanEmptyEntry(str);
+        if(block.str.length > 0 && block.type == "ANY"){
+            block.type = "TEXT";
+        }
     }
 };
 
