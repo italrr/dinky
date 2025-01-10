@@ -363,11 +363,12 @@ static RenderProduct render(const std::shared_ptr<DNK::Node> &node, DNK::Node *h
     RenderProduct self;
 
     DNK::Vec2<int> margin (
-        node->getNumberStyle("m"),
-        node->getNumberStyle("s")
+        node->getNumberStyle("m") * handle.pixelSize,
+        node->getNumberStyle("s") * handle.pixelSize
     );
 
     int avLinSpace = wideSpace - margin.x * 2;
+    int avLinRSpace = wideSpace - margin.x * 2;
 
     switch(node->type){
         case DNK::NodeType::PANEL: {
@@ -377,7 +378,7 @@ static RenderProduct render(const std::shared_ptr<DNK::Node> &node, DNK::Node *h
                     render(node->children[i], node.get(), avLinSpace, handle)
                 );
             }
-            int height = 0;
+            int height = margin.y;
             for(int i = 0; i < products.size(); ++i){
                 height += products[i].canvas->height;
             }
@@ -389,7 +390,7 @@ static RenderProduct render(const std::shared_ptr<DNK::Node> &node, DNK::Node *h
                     p.canvas.get(),
                     0,
                     y,
-                    true // TODO: Check later
+                    true
                 );
                 y += p.canvas->height;
             }
@@ -401,16 +402,17 @@ static RenderProduct render(const std::shared_ptr<DNK::Node> &node, DNK::Node *h
             int lineHeight = DNK::Math::round(node->getNumberStyle("ln") != 0 ? (node->getNumberStyle("ln")+0.3f)*(float)empty.y : (float)empty.y*1.3f);
             auto advX = empty.x;
             auto advY = empty.y;
-            int spacey = lineHeight;
+            int spacey = margin.y + lineHeight;
             // Get measurement
             for(int i = 0; i < tokens.size(); ++i){
                 auto &t = tokens[i];
                 auto dims = FontRender::getDimensions(handle.currentFont, t);
-                if(cursor.x + dims.x > avLinSpace){
+                if(cursor.x + dims.x > avLinRSpace){
                     cursor.y += lineHeight;
                     spacey += lineHeight;
                     cursor.x = margin.x;
-                }else{
+                    cursor.x += advX + dims.x; 
+                }else{                   
                     cursor.x += advX + dims.x;
                 }
             }
@@ -420,11 +422,11 @@ static RenderProduct render(const std::shared_ptr<DNK::Node> &node, DNK::Node *h
             for(int i = 0; i < tokens.size(); ++i){
                 auto &t = tokens[i];
                 auto dims = FontRender::getDimensions(handle.currentFont, t);
-                if(cursor.x + dims.x > avLinSpace){
+                if(cursor.x + dims.x > avLinRSpace){
                     cursor.y += lineHeight;
                     cursor.x = margin.x;
                     FontRender::render(handle.currentFont, t, cursor, handle.color, self.canvas.get());
-                    cursor.x += dims.x;
+                    cursor.x += advX + dims.x;                   
                 }else{
                     FontRender::render(handle.currentFont, t, cursor, handle.color, self.canvas.get());
                     cursor.x += advX + dims.x;
@@ -454,8 +456,8 @@ bool DNK::RenderImage(const std::shared_ptr<DNK::Document> &doc, const std::stri
 
     
     // Write
-    printf("Target: IMAGE %ix%i RGBA\n", handle.minSize[0], handle.minSize[1]);
     body.canvas->write(filename);
+    printf("Target: IMAGE %ix%i RGBA\n", body.canvas->width, body.canvas->height);
     printf("Wrote '%s'\n", filename.c_str());
 
     return true;
