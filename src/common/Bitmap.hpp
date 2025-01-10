@@ -1,7 +1,7 @@
 #ifndef DNK_BITMAP_HPP
     #define DNK_BITMAP_HPP
 
-    #include "../common/Types.hpp"
+    #include "./Types.hpp"
 
     namespace DNK {
 
@@ -47,11 +47,9 @@
             Bitmap sub(unsigned x, unsigned y, unsigned width, unsigned height);
             Bitmap rotate(float angle);
 
-            void paste(const Bitmap &src, const DNK::Vec2<unsigned> &vec);
-            void paste(const Bitmap &src, unsigned x, unsigned y);
+            void paste(Bitmap *src, unsigned x, unsigned y, bool alphaBlend);
+            void pasteAndShade(Bitmap *src, unsigned x, unsigned y, const DNK::Color &c);
 
-            void paste(const Bitmap &src, unsigned x, unsigned y, bool alphaBlend);
-            void pasteAndShade(const Bitmap &src, unsigned x, unsigned y, const DNK::Color &c);
             void resize(unsigned nwidth, unsigned nheight);
             void shade(const DNK::Color &color);
             void clear();

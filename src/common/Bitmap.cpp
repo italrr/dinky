@@ -2,9 +2,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
-#include "../common/thirdparty/stb_image.h"
-#include "../common/thirdparty/stb_image_write.h"
-#include "../common/Tools.hpp"
+#include "./thirdparty/stb_image.h"
+#include "./thirdparty/stb_image_write.h"
+#include "./Tools.hpp"
 
 #include "Bitmap.hpp"
 
@@ -64,14 +64,6 @@ DNK::Bitmap DNK::Bitmap::rotate(float angle){
     return result;
 }
 
-void DNK::Bitmap::paste(const DNK::Bitmap &src, const DNK::Vec2<unsigned> &vec){
-    this->paste(src, vec.x, vec.y);
-}
-
-void DNK::Bitmap::paste(const DNK::Bitmap &src, unsigned x, unsigned y){
-    this->paste(src, x, y, false);
-}
-
 void DNK::Bitmap::shade(const DNK::Color &color){
     for(unsigned i = 0; i < this->pixels.size(); ++i){
         auto &p = this->pixels[i];
@@ -90,27 +82,27 @@ void DNK::Bitmap::resize(unsigned nwidth, unsigned nheight){
     auto cp = this->copy();
     this->clear();
     this->build(DNK::Colors::White, this->format, nwidth, nheight);
-    this->paste(cp, {0, 0});
+    this->paste(&cp, 0, 0, false);
 }
 
-void DNK::Bitmap::pasteAndShade(const Bitmap &src, unsigned x, unsigned y, const DNK::Color &c){
-    if(src.format != this->format) {
+void DNK::Bitmap::pasteAndShade(Bitmap *src, unsigned x, unsigned y, const DNK::Color &c){
+    if(src->format != this->format) {
         printf("Bitmap paste: Cannot paste a Bitmap onto another Bitmap of a differing image format\n");
         return;
     }
-    for(int _x = 0; _x < src.width; ++_x){
-        for(int _y = 0; _y < src.height; ++_y){
+    for(int _x = 0; _x < src->width; ++_x){
+        for(int _y = 0; _y < src->height; ++_y){
             
             if(_x + x >= this->width || _y + y >= this->height) continue;
             
-            int srcIndex = (_x + _y * src.width);
+            int srcIndex = (_x + _y * src->width);
             int index = (_x + x + (_y + y) * width);
             
             if(channels == 4) {
-                float srcRed = src.pixels[srcIndex].r * c.r;
-                float srcGreen = src.pixels[srcIndex].g * c.g;
-                float srcBlue =  src.pixels[srcIndex].b * c.b;
-                float srcAlpha = src.pixels[srcIndex].a;
+                float srcRed = src->pixels[srcIndex].r * c.r;
+                float srcGreen = src->pixels[srcIndex].g * c.g;
+                float srcBlue =  src->pixels[srcIndex].b * c.b;
+                float srcAlpha = src->pixels[srcIndex].a;
                 
                 float targetRed = this->pixels[index].r;
                 float targetGreen = this->pixels[index].g;
@@ -126,24 +118,24 @@ void DNK::Bitmap::pasteAndShade(const Bitmap &src, unsigned x, unsigned y, const
     }
 }
 
-void DNK::Bitmap::paste(const Bitmap &src, unsigned x, unsigned y, bool alphaBlend){
-    if(src.format != this->format) {
+void DNK::Bitmap::paste(Bitmap *src, unsigned x, unsigned y, bool alphaBlend){
+    if(src->format != this->format) {
         printf("Bitmap paste: Cannot paste a Bitmap onto another Bitmap of a differing image format\n");
         return;
     }
-    for(int _x = 0; _x < src.width; ++_x){
-        for(int _y = 0; _y < src.height; ++_y){
+    for(int _x = 0; _x < src->width; ++_x){
+        for(int _y = 0; _y < src->height; ++_y){
             
             if(_x + x >= this->width || _y + y >= this->height) continue;
             
-            int srcIndex = (_x + _y * src.width);
+            int srcIndex = (_x + _y * src->width);
             int index = (_x + x + (_y + y) * width);
             
             if(alphaBlend && channels == 4) {
-                float srcRed = src.pixels[srcIndex].r;
-                float srcGreen = src.pixels[srcIndex].g;
-                float srcBlue =  src.pixels[srcIndex].b;
-                float srcAlpha = src.pixels[srcIndex].a;
+                float srcRed = src->pixels[srcIndex].r;
+                float srcGreen = src->pixels[srcIndex].g;
+                float srcBlue =  src->pixels[srcIndex].b;
+                float srcAlpha = src->pixels[srcIndex].a;
                 
                 float targetRed = this->pixels[index].r;
                 float targetGreen = this->pixels[index].g;
@@ -154,11 +146,11 @@ void DNK::Bitmap::paste(const Bitmap &src, unsigned x, unsigned y, bool alphaBle
                 this->pixels[index].b = (srcBlue * srcAlpha) + (targetBlue * (1.0f - srcAlpha));
                 this->pixels[index].a = 1.0f;
             }else {									
-                if(index < 0 || srcIndex < 0 || index > this->pixels.size() || srcIndex > src.pixels.size()) {
+                if(index < 0 || srcIndex < 0 || index > this->pixels.size() || srcIndex > src->pixels.size()) {
                     continue;
                 }
 
-                this->pixels[index] = src.pixels[srcIndex];
+                this->pixels[index] = src->pixels[srcIndex];
             }
             
         }

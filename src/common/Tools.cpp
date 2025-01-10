@@ -261,8 +261,20 @@ std::string DNK::String::str(uint64 n){
 	return std::to_string(n);
 }
 
+float DNK::String::number(const std::string &n){
+    return std::stof(n);
+}
+
 std::string DNK::String::str(int64 n){
 	return std::to_string(n);
+}
+
+bool DNK::String::isNumber(const std::string &s){
+    return (s.find_first_not_of( "-.0123456789") == std::string::npos) && (s != "-" && s != "--" && s != "+" && s != "++");
+}    
+
+bool DNK::String::isString(const std::string &s){
+    return s.size() > 1 && s[0] == '\'' && s[s.length()-1] == '\'';
 }
 
 std::string DNK::String::replaceAll(std::string subject, const std::string& search, const std::string& replace){

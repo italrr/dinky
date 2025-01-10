@@ -9,7 +9,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/builds/cmake)
 set (dinky_src
     src/common/Tools.cpp
     src/common/Types.cpp
-    src/renderer/Bitmap.cpp
+    src/common/Bitmap.cpp
     src/renderer/Image.cpp
 )
 

@@ -155,9 +155,11 @@
             std::string str(uint32 n);
             std::string str(int32 n);
             std::string str(uint64 n);
-            std::string str(int64 n);       
+            std::string str(int64 n);    
+            float number(const std::string &n);   
             std::string replaceAll(std::string subject, const std::string &search, const std::string &replace);
-
+            bool isNumber(const std::string &s);
+            bool isString(const std::string &s);             
 
             template<typename T>
             std::string str(const DNK::Vec2<T> &vec){

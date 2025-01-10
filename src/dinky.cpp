@@ -124,7 +124,7 @@ namespace Parser {
         char lastChar;
 
         auto node = std::make_shared<DNK::Node>();
-        node->type = DNK::NodeType::ANY;
+        node->type = DNK::NodeType::PANEL;
         node->str = "";
 
         for(int i = 0; i < input.size(); ++i){
@@ -174,7 +174,7 @@ namespace Parser {
         }
         head.push_back(node);
         node->str = Parser::cleanEmptyEntry(str);
-        if(node->str.size() > 0 && node->type == DNK::NodeType::ANY){
+        if(node->str.size() > 0 && node->type == DNK::NodeType::PANEL){
             node->type = DNK::NodeType::TEXT;
         }
 
@@ -192,8 +192,6 @@ bool DNK::parse(const std::shared_ptr<DNK::Document> &target, const std::string 
     target->body = body[0];
     return true;
 }
-
-bool RenderImage(const std::shared_ptr<DNK::Document> &doc, const std::string &filename, const DNK::Vec2<int> &expSize);
 
 int main(int argc, char* argv[]){
     auto params = DNK::Core::loadParams(argc, argv);
@@ -246,7 +244,7 @@ int main(int argc, char* argv[]){
         return 1;
     }
 
-    if(!RenderImage(document, "Test.png", DNK::Vec2<int>(10, 0))){
+    if(!DNK::RenderImage(document, "Test.png", 3)){
         fprintf(stderr, "Failed to render document\n");        
         return 1;        
     }
